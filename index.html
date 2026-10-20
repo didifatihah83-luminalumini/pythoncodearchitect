@@ -12,7 +12,7 @@
   --bg:#EAF2FB; --bg2:#DCE8F6; --card:#FFFFFF; --ink:#1B2F4B; --muted:#4F6380; --line:#CBDAEC;
   --purple:#3776AB; --purple-soft:#DCEAF8; --pink:#C2185B; --pink-soft:#FDE2EC; --mint:#1E8449; --mint-soft:#D6F2E1;
   --sun:#FFD43B; --sun-soft:#FFF5CC; --sky:#2F86E8; --sky-soft:#DDEEFF; --bad:#C62828; --bad-soft:#FDE3E3;
-  --part:#3776AB; --part-soft:#DCEAF8;
+  --part:var(--purple); --part-soft:var(--purple-soft);
   --code-bg:#1B2F4B; --code-ink:#EEF4FF; --code-muted:#9BB3D1; --code-str:#FFD43B; --code-kw:#8EC1EE; --code-num:#FFB3C8;
   --display:'Baloo 2', 'Trebuchet MS', Verdana, sans-serif; --sans:'Nunito', Verdana, Arial, sans-serif; --mono:'JetBrains Mono', 'Courier New', monospace;
   --shadow:0 6px 0 rgba(27,47,75,.08);
@@ -502,6 +502,175 @@ body{background-color:var(--bg);
 .testres{margin-top:10px;border-radius:14px;padding:10px 14px;font-weight:800}
 .testres.good{background:var(--mint-soft);color:var(--mint)}
 .testres.bad{background:var(--bad-soft);color:var(--bad)}
+
+/* ===== Clear class plan ===== */
+.plan{display:block;background:var(--card);border:3px solid var(--line);border-radius:24px;padding:14px 16px 16px;margin:0 0 20px;box-shadow:var(--shadow)}
+.plan-head{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:10px}
+.plan-head b{font-family:var(--display);font-size:20px}
+.plan-head span{font-size:14px;color:var(--muted);font-weight:700}
+.plan-bar{display:flex;gap:3px;height:12px;border-radius:99px;overflow:hidden;margin-bottom:12px}
+.pb{opacity:.35;transition:opacity .2s}
+.pb.on{opacity:1}
+.pb0{background:#3776AB}.pb1{background:#FFB300}.pb2{background:#5A9FD4}.pb3{background:#2E9E5B}.pb4{background:#E67E22}.pb5{background:#8E44AD}.pb6{background:#C2185B}
+.plan-steps{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:8px}
+.ps{display:flex;align-items:center;gap:8px;min-width:0;text-align:left;padding:8px 10px;border-radius:16px;border:3px solid transparent;background:var(--bg);color:var(--ink);transition:transform .15s,border-color .15s}
+.ps:hover{transform:translateY(-2px);border-color:var(--line)}
+.ps.on{border-color:var(--part);background:var(--part-soft)}
+.ps-dot{flex:none;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font-size:17px;background-clip:padding-box}
+.ps-dot.pb1{background:#FFE08A}
+.ps-txt{display:flex;flex-direction:column;min-width:0;line-height:1.15}
+.ps-txt b{font-size:15px;font-weight:800;white-space:nowrap}
+.ps-txt small{font-family:var(--mono);font-size:12px;color:var(--muted)}
+.ps .ps-dot{color:#fff}
+@media (max-width:1180px){ .plan-steps{grid-template-columns:repeat(4,minmax(0,1fr))} }
+@media (max-width:640px){
+  .plan{padding:12px 12px 14px;border-radius:20px}
+  .plan-head span{display:none}
+  .plan-steps{grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+  .ps{padding:7px 8px}
+  .ps-dot{width:30px;height:30px;font-size:15px}
+}
+
+/* ===== Header that fits every screen ===== */
+.top-inner{display:flex;flex-wrap:wrap;align-items:center;gap:10px 12px}
+.brand{order:1;-webkit-text-fill-color:initial;background:none;color:var(--ink)}
+.brand .brand-text{background:linear-gradient(90deg,#3776AB,#3776AB 55%,#C99A00);-webkit-background-clip:text;background-clip:text;color:transparent}
+:root[data-theme="dark"] .brand .brand-text{background:linear-gradient(90deg,#7BB4E6,#FFD43B);-webkit-background-clip:text;background-clip:text}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .brand .brand-text{background:linear-gradient(90deg,#7BB4E6,#FFD43B);-webkit-background-clip:text;background-clip:text}}
+.top-stats{order:2;margin-left:auto;display:flex;align-items:center;gap:10px}
+.top-tools{order:3;display:flex;align-items:center;gap:8px}
+.donecount{margin-left:0}
+@media (max-width:900px){
+  .top-inner{padding:8px 12px}
+  .top-tools{order:2;margin-left:auto}
+  .top-stats{order:3;margin-left:0;width:100%;justify-content:space-between;gap:8px}
+  .sync .sync-text{display:none}
+}
+@media (max-width:480px){
+  .brand .brand-text{font-size:19px}
+  .brand svg{width:32px;height:32px}
+  .top-tools{gap:6px}
+  .skybtn,.themebtn,.userbtn{width:38px !important;height:38px;padding:0 !important;justify-content:center}
+  .userbtn .ua{font-size:22px}
+  .xp{padding:3px 12px 3px 4px}
+  .xp-star{width:30px;height:30px;font-size:16px}
+  .xp-text b{font-size:17px}
+  .starbtn{font-size:16px;padding:4px 10px}
+}
+@media (max-width:360px){ .brand .brand-text{display:none} }
+
+/* ===== Small-screen polish ===== */
+@media (max-width:640px){
+  .overlay.login{padding-top:76px}
+  .login-card{padding:22px 16px 18px;border-radius:28px}
+  .login-card::before{border-radius:28px}
+  .complete{font-size:19px;padding:13px 18px}
+  .finish{gap:8px}
+  .finish .mid{order:-1;flex:1 0 100%}
+  .navbtn{flex:1;font-size:16px;padding:10px 12px}
+  .hero h1{font-size:34px}
+  .hero p{font-size:18px}
+  .tab{font-size:16px;padding:8px 12px}
+  .tabs{gap:6px}
+  .card h3{font-size:23px}
+  .big-simple{font-size:18px}
+  .remember{font-size:17px}
+  .flip .front{font-size:19px}
+  .task-text{font-size:18px}
+  .q h3{font-size:20px}
+  .opt{font-size:17px;padding:12px}
+  .chal{font-size:17px}
+  .lockcard h2{font-size:32px}
+  .lockcard .padlock{font-size:56px}
+  .dash-head h1{font-size:30px}
+  .roles .role{padding:14px 10px}
+  .acc-head .pa.big{font-size:48px}
+}
+
+/* ===== Mobile route: scroll inside its own strip ===== */
+@media (max-width:960px){
+  .wrap{grid-template-columns:minmax(0,1fr)}
+  .route{min-width:0;max-width:100%}
+  .routes{position:relative;display:flex;gap:10px;overflow-x:auto;overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch;scrollbar-width:thin;padding-bottom:6px}
+  .partgroup{flex:none;display:flex;flex-direction:column;gap:2px}
+  .partgroup .part-head{display:flex;margin:0;padding:3px 10px;font-size:13px;border-radius:99px;align-self:flex-start;gap:6px}
+  .partgroup .part-head small{display:inline;font-size:12px;margin-left:4px}
+  .partgroup .part-head .emoji{font-size:16px}
+  .stops{overflow:visible;padding:4px 2px 4px}
+  .side-actions{max-width:100%}
+}
+
+@media (max-width:960px){
+  .routes{align-items:flex-start}
+  .stop-title{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  .side-actions{margin-top:6px}
+}
+@media (max-width:640px){
+  .tabs{flex-wrap:nowrap;overflow-x:auto;padding:2px 2px 10px;margin-bottom:16px;scrollbar-width:thin}
+  .tab{flex:none}
+  .login-theme{width:44px !important;height:44px !important;padding:0 !important;justify-content:center}
+  .login-theme .tlabel{display:none}
+}
+:root[data-theme="dark"] .login-card h1 span{background:linear-gradient(90deg,#7BB4E6,#FFD43B);-webkit-background-clip:text;background-clip:text}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .login-card h1 span{background:linear-gradient(90deg,#7BB4E6,#FFD43B);-webkit-background-clip:text;background-clip:text}}
+
+/* Desktop header in one row, plan steps never cut off */
+@media (max-width:1500px){
+  .donecount{display:none}
+  .sync .sync-text{display:none}
+  .top .themebtn .tlabel{display:none}
+  .top .themebtn{padding:0;width:46px;justify-content:center}
+}
+.plan-steps{grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}
+@media (max-width:640px){ .plan-steps{grid-template-columns:repeat(2,minmax(0,1fr))} }
+
+/* Login + dashboard always fit the screen width */
+.overlay.login{grid-template-columns:minmax(0,1fr);justify-items:center}
+.login-card{min-width:0;max-width:min(640px,100%)}
+.login-card.dash{max-width:min(1100px,100%)}
+.login-theme{position:absolute}
+.dash-sec,.roster-form,.added{min-width:0;max-width:100%}
+.roster-form textarea,.roster-form input{min-width:0;width:100%}
+@media (max-width:640px){
+  .added ul{grid-template-columns:repeat(auto-fill,minmax(130px,1fr))}
+  .dash-sec h2{font-size:22px}
+  .dash-head .acc-actions{width:100%}
+  .dash-head .acc-actions .btn{flex:1}
+}
+
+.dash-msg{font-weight:800;margin:6px 0;min-height:0}
+.dash-msg:empty{display:none}
+.dash-msg.good{color:var(--mint)}
+.dash-msg.bad{color:var(--bad)}
+@media (max-width:640px){
+  .roster-form{flex-direction:column}
+  .roster-form .btn{width:100%}
+  .dash-head .acc-actions .btn{font-size:15px;padding:10px 12px}
+}
+
+/* Dark mode: dark text on the light accent colours */
+:root[data-theme="dark"] .btn:not(.ghost):not(.sun):not(.danger),:root[data-theme="dark"] .tab[aria-selected="true"],:root[data-theme="dark"] .flip .front,:root[data-theme="dark"] .steps li::before,:root[data-theme="dark"] .sl-num{color:#0D1726}
+:root[data-theme="dark"] .flip .front code{background:rgba(13,23,38,.15);color:#0D1726}
+:root[data-theme="dark"] .tab[aria-selected="true"] .count{background:rgba(13,23,38,.18)}
+@media (prefers-color-scheme:dark){
+:root:not([data-theme="light"]) .btn:not(.ghost):not(.sun):not(.danger),:root:not([data-theme="light"]) .tab[aria-selected="true"],:root:not([data-theme="light"]) .flip .front,:root:not([data-theme="light"]) .steps li::before,:root:not([data-theme="light"]) .sl-num{color:#0D1726}
+:root:not([data-theme="light"]) .flip .front code{background:rgba(13,23,38,.15);color:#0D1726}
+:root:not([data-theme="light"]) .tab[aria-selected="true"] .count{background:rgba(13,23,38,.18)}
+}
+
+@media (max-width:640px){ .flips{grid-template-columns:repeat(2,minmax(0,1fr))} .flip{min-height:84px} .flip .back{font-size:14px;padding:8px} }
+
+.trophy-card h2{padding-right:56px}
+@media (max-width:640px){
+  .trophy-card{padding:20px 16px;border-radius:26px}
+  .trophy-card h2{font-size:26px}
+  .stickers{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+  .sticker{padding:10px 6px}
+  .sticker .s-emoji{font-size:36px}
+  .sticker b{font-size:15px}
+  .sticker small{font-size:12px}
+  .close{right:12px;top:12px;width:40px;height:40px}
+}
 </style>
 </head>
 <body>
@@ -510,15 +679,19 @@ body{background-color:var(--bg);
 <div id="app" hidden>
 <header class="top">
   <div class="top-inner">
-    <div class="brand"><span id="brandmark"></span>Code Architect</div>
-    <span class="donecount" id="donecount"></span>
-    <span class="sync" id="sync" role="status"></span>
-    <button class="starbtn" id="starbtn" aria-label="Open my stars and stickers"></button>
-    <div class="xp" id="xp" aria-live="polite"></div>
-    <button class="skybtn" id="skybtn" aria-pressed="true" aria-label="Turn the moving background off">✨</button>
-    <button class="skybtn" id="soundbtn" aria-label="Turn sounds off">🔊</button>
-    <button class="themebtn" id="themebtn" aria-label="Switch theme">🌙</button>
-    <button class="userbtn" id="userbtn" aria-label="My account"></button>
+    <div class="brand"><span id="brandmark"></span><span class="brand-text">Code Architect</span></div>
+    <div class="top-stats">
+      <span class="donecount" id="donecount"></span>
+      <span class="sync" id="sync" role="status"></span>
+      <button class="starbtn" id="starbtn" aria-label="Open my stars and stickers"></button>
+      <div class="xp" id="xp" aria-live="polite"></div>
+    </div>
+    <div class="top-tools">
+      <button class="skybtn" id="skybtn" aria-pressed="true" aria-label="Turn the moving background off">✨</button>
+      <button class="skybtn" id="soundbtn" aria-label="Turn sounds off">🔊</button>
+      <button class="themebtn" id="themebtn" aria-label="Switch theme">🌙</button>
+      <button class="userbtn" id="userbtn" aria-label="My account"></button>
+    </div>
   </div>
 </header>
 <div class="wrap">
@@ -22416,7 +22589,7 @@ async function loadSheetList(){
   sheetSync.loadingList = true;
   try{
     const j = await sheetCall({action:"list"});
-    sheetSync.list = j.students || [];
+    sheetSync.list = j.students || []; sheetSync.failed = false;
     const p = loadProfiles(); let changed = false;
     sheetSync.list.forEach(st=>{ if(st.slug && !p[st.slug]){ p[st.slug] = {name: st.name, avatar: st.avatar || "🐍", created: Date.now(), fromCloud: true}; changed = true; } });
     if(changed) saveProfiles(p);
@@ -23150,7 +23323,12 @@ function renderLesson(){
     <label class="card chal ${state.ch[`${i}-${ci}`]?"checked":""}"><input type="checkbox" data-ch="${ci}" ${state.ch[`${i}-${ci}`]?"checked":""}><span>${md(c)}</span></label>`).join("");
 
   const tabs = [["learn","📖","Learn",""],["practice","✏️","Practice",`${prDone}/${L.practice.length}`],["project","🛠️","Project",""],["quiz","❓","Quiz",`${qAnswered}/${L.quiz.length}`],["challenges","🏆","Challenges",`${chDone}/${L.challenges.length}`]];
-  const plan = `<div class="plan" aria-label="2-hour class plan">${PLAN.map(p=>`<button class="seg ${state.tab===p.tab?"on":""}" style="flex:${p.min}" data-tab="${p.tab}"><span class="seg-label">${p.label}</span><span class="seg-min">${p.min} min</span></button>`).join("")}</div>`;
+  const PLAN_ICON = {"Big idea":"📘","Warm-up":"☀️","Learn":"📖","Practice":"✏️","Project":"🛠️","Quiz":"❓","Challenges":"🏆"};
+  const plan = `<div class="plan" aria-label="2-hour class plan">
+    <div class="plan-head"><b>⏰ 2-hour class plan</b><span>Tap a step to jump there</span></div>
+    <div class="plan-bar" aria-hidden="true">${PLAN.map((p,k)=>`<span class="pb pb${k} ${state.tab===p.tab?"on":""}" style="flex:${p.min}"></span>`).join("")}</div>
+    <div class="plan-steps">${PLAN.map((p,k)=>`<button class="ps ${state.tab===p.tab?"on":""}" data-tab="${p.tab}" aria-label="${p.label}, ${p.min} minutes"><span class="ps-dot pb${k}">${PLAN_ICON[p.label]}</span><span class="ps-txt"><b>${p.label}</b><small>${p.min} min</small></span></button>`).join("")}</div>
+  </div>`;
   const panels = {learn: bigIdea(L) + warm + learn + mistakes, practice, project, quiz, challenges: chal};
 
   if(!buddyMsg) buddyMsg = HELLO[i % HELLO.length];
@@ -23170,7 +23348,13 @@ function navRow(i, showComplete){
   </div>`;
 }
 
-function render(){ renderHeader(); renderRoute(); renderLesson(); }
+function centerRoute(){
+  const r = document.getElementById("routes"); if(!r || r.scrollWidth <= r.clientWidth + 4) return;
+  const cur = r.querySelector(".stop.current"); if(!cur) return;
+  const rb = r.getBoundingClientRect(), cb = cur.getBoundingClientRect();
+  r.scrollLeft += (cb.left + cb.width / 2) - (rb.left + rb.width / 2);
+}
+function render(){ renderHeader(); renderRoute(); renderLesson(); centerRoute(); }
 
 /* ---------- Student accounts (log in on this device) ---------- */
 const AVATARS = ["🐍","🦊","🐱","🐼","🦄","🐯","🐸","🐧","🦉","🐨","🐙","🚀"];
@@ -23241,6 +23425,8 @@ function renderLogin(msg){
           ${list.map(([slug,p])=>`<button class="profile" data-acc="pick" data-slug="${slug}"><span class="pa">${p.avatar}</span><b>${esc(p.name)}</b></button>`).join("")}
         </div>
         ${SHEET && sheetSync.loadingList ? `<div class="loading-names">⏳ Loading class names…</div>` : ""}
+        ${SHEET && !sheetSync.loadingList && sheetSync.failed ? `<div class="no-students">⚠️ Couldn’t load the class list. Check the internet and try again.</div>` : ""}
+        ${SHEET && !sheetSync.loadingList ? `<button class="linkbtn" data-acc="names-refresh">🔄 Refresh names</button>` : ""}
         ${list.length || (SHEET && sheetSync.loadingList) ? "" : `<div class="no-students">🙋 No names here yet. Ask your teacher to add your name.</div>`}
         <p class="small">Can’t find your name? Ask your teacher to add it.</p>
         <button class="linkbtn" data-acc="import">📥 I have a save code from another device</button>
@@ -23305,7 +23491,7 @@ function renderDashboard(msg){
         <div><span class="pill">👩‍🏫 Teacher mode</span><h1>Teacher dashboard</h1></div>
         <div class="acc-actions"><button class="btn sun" data-acc="preview">👀 View all lessons</button><button class="btn ghost" data-acc="tlogout">🚪 Log out</button></div>
       </div>
-      <div class="lockmsg" role="alert">${msg ? esc(msg) : ""}</div>
+      <div class="dash-msg ${msg && /problem|couldn|must|⚠️|not|only/i.test(msg) ? "bad" : "good"}" role="status">${msg ? esc(msg) : ""}</div>
       <div class="dash-info">🔑 Lesson password for students: <b>1234567</b> (clue: 1 until 7)</div>
 
       <section class="dash-sec">
@@ -23431,7 +23617,8 @@ function handleAccountClick(t){
   else if(a === "import"){ loginView = {mode:"import"}; renderLogin(); sfx("pop"); }
   else if(a === "back"){ loginView = {mode:"pick"}; renderLogin(); }
   else if(a === "role"){ loginView = {mode:"role"}; renderLogin(); }
-  else if(a === "role-student"){ loginView = {mode:"pick"}; renderLogin(); sfx("pop"); }
+  else if(a === "role-student"){ if(SHEET){ sheetSync.list = null; sheetSync.failed = false; } loginView = {mode:"pick"}; renderLogin(); sfx("pop"); }
+  else if(a === "names-refresh"){ sheetSync.list = null; sheetSync.failed = false; renderLogin(); }
   else if(a === "role-teacher"){ loginView = {mode:"teacher"}; renderLogin(); sfx("pop"); }
   else if(a === "preview"){ loginAsTeacher(); sfx("unlock"); }
   else if(a === "dash"){ backToDashboard(); }
