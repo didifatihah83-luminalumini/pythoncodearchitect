@@ -498,6 +498,10 @@ body{background-color:var(--bg);
 .pill.on{background:var(--mint-soft);color:var(--mint)}
 .pill.off{background:var(--bad-soft);color:var(--bad)}
 .sync-class{color:var(--mint)}
+
+.testres{margin-top:10px;border-radius:14px;padding:10px 14px;font-weight:800}
+.testres.good{background:var(--mint-soft);color:var(--mint)}
+.testres.bad{background:var(--bad-soft);color:var(--bad)}
 </style>
 </head>
 <body>
@@ -537,7 +541,7 @@ body{background-color:var(--bg);
 // ==================== CLASS CLOUD SETTING ====================
 // Paste your Google Apps Script Web app URL between the quotes below.
 // Leave it empty to save progress only in each browser.
-const CLOUD_URL = "https://script.google.com/macros/s/AKfycbx74VhRAoP80032KRPNGtn_OmZCAmoYa_ILYJOSwrIv67QKl-pYaltzFn1HEnu0p3WxEw/exec";
+const CLOUD_URL = "https://script.google.com/macros/s/AKfycbxl4Q9-imcIEX61PiEIzEerbz4bInkEI66AaYe2U8J3sAwJT4lCmuxhQSB2GA6I_7YkvA/exec";
 
 // ==================== LESSONS START ====================
 // All 40 lessons are below. To add a lesson, paste it before LESSONS END.
@@ -22354,10 +22358,32 @@ function save(){
 /* ---------- Class cloud (Google Sheets) ---------- */
 const SHEET = (typeof CLOUD_URL === "string" && /^https:\/\/script\.google\.com\//.test(CLOUD_URL.trim())) ? CLOUD_URL.trim() : "";
 const sheetSync = {timer:null, busy:false, again:false, list:null, loadingList:false};
+let lastCloudError = "";
+async function readCloud(r){
+  const text = await r.text();
+  try{ return JSON.parse(text); }
+  catch(e){
+    if(/accounts\.google\.com|ServiceLogin|sign in/i.test(text)) throw new Error("Google asked for a sign-in. In Apps Script, set Who has access to: Anyone, then deploy again.");
+    throw new Error("The Google Sheet sent back a web page instead of data. Check the deployment is a Web app and you copied the /exec URL.");
+  }
+}
 async function sheetCall(payload){
-  const r = await fetch(SHEET, {method:"POST", body: JSON.stringify(payload)});
-  const j = await r.json();
-  if(!j.ok) throw new Error(j.error || "cloud error");
+  let j;
+  try{
+    const r = await fetch(SHEET, {method:"POST", body: JSON.stringify(payload)});
+    j = await readCloud(r);
+  }catch(err){
+    if(payload.action === "save" || /Google|web page/.test(err.message)){ lastCloudError = err.message; throw err; }
+    try{
+      const r2 = await fetch(SHEET + "?payload=" + encodeURIComponent(JSON.stringify(payload)));
+      j = await readCloud(r2);
+    }catch(err2){
+      lastCloudError = /Google|web page/.test(err2.message) ? err2.message : "Couldn’t connect. Check the internet, and that the CLOUD_URL is the /exec Web app URL with access set to Anyone.";
+      throw new Error(lastCloudError);
+    }
+  }
+  if(!j.ok){ lastCloudError = "The Google script reported: " + (j.error || "unknown error"); throw new Error(lastCloudError); }
+  lastCloudError = "";
   return j;
 }
 function slimState(st){
@@ -23285,9 +23311,10 @@ function renderDashboard(msg){
       <section class="dash-sec">
         <h2>☁️ Class cloud ${SHEET ? `<span class="pill on">ON</span>` : `<span class="pill off">OFF</span>`}</h2>
         ${SHEET ? `<p class="small">Names and progress are saved to your Google Sheet, so students see the same progress on any browser or computer.</p>
-          ${sheetSync.loadingList ? `<div class="loading-names">⏳ Loading class progress…</div>` : sheetSync.failed && !cloudRows.length ? `<p class="lockmsg">Couldn’t reach the Google Sheet. Check the CLOUD_URL and the Apps Script deployment.</p>` : rowsHTML(cloudRows, "cloud")}
-          <div class="actions"><button class="btn ghost" data-acc="cloud-refresh">🔄 Refresh</button></div>`
-        : `<p class="small">Right now names and progress are saved only in each browser. Turn on the class cloud (a free Google Sheet) so students keep their progress on any browser or computer, and you can see the whole class here. Setup takes about 5 minutes: see the guide from your setup notes.</p>`}
+          ${sheetSync.loadingList ? `<div class="loading-names">⏳ Loading class progress…</div>` : sheetSync.failed ? `<p class="lockmsg">⚠️ ${esc(lastCloudError || "Couldn’t reach the Google Sheet.")}</p>` : rowsHTML(cloudRows, "cloud")}
+          <div class="actions"><button class="btn ghost" data-acc="cloud-refresh">🔄 Refresh</button><button class="btn ghost" data-acc="cloud-test">🔌 Test connection</button></div>
+          ${dashUI.test ? `<div class="testres ${dashUI.test.ok ? "good" : "bad"}">${esc(dashUI.test.msg)}</div>` : ""}`
+        : `<p class="small">Right now names and progress are saved only in each browser, because <code>CLOUD_URL</code> in this index.html is empty. Paste your Google Apps Script /exec link into CLOUD_URL, save, and upload the file again.${location.hostname.endsWith("claude.ai") || location.hostname.endsWith("claudeusercontent.com") ? " Note: the class cloud only works on your own website (GitHub or Netlify), not on this Claude link." : ""}</p>`}
       </section>
 
       <section class="dash-sec">
@@ -23411,6 +23438,11 @@ function handleAccountClick(t){
   else if(a === "tlogout"){ lastAdded = []; setTeacherSession(false); setActive(null); closeAccount(); profile = null; loginView = {mode:"role"}; showLogin(); toast("Logged out of teacher mode"); }
   else if(a === "reset-pin"){ dashUI = {resetSlug:t.dataset.slug, delSlug:null}; renderDashboard(); const i = document.querySelector(".small-pin"); if(i) i.focus(); }
   else if(a === "del-ask"){ dashUI = {resetSlug:null, delSlug:t.dataset.slug}; renderDashboard(); }
+  else if(a === "cloud-test"){
+    dashUI.test = {ok:true, msg:"⏳ Testing…"}; renderDashboard();
+    sheetCall({action:"ping"}).then(()=>{ dashUI.test = {ok:true, msg:"✅ Connected! The Google Sheet is working."}; sheetSync.failed = false; renderDashboard(); sfx("right"); })
+      .catch(err=>{ dashUI.test = {ok:false, msg:"❌ " + err.message}; renderDashboard(); sfx("wrong"); });
+  }
   else if(a === "cloud-refresh"){ sheetSync.list = null; sheetSync.failed = false; loadSheetList(); renderDashboard(); }
   else if(a === "cloud-del-ask"){ dashUI = {resetSlug:null, delSlug:"cloud:" + t.dataset.slug}; renderDashboard(); }
   else if(a === "clear-added"){ lastAdded = []; renderDashboard(); }
@@ -23483,7 +23515,7 @@ document.addEventListener("submit", async e=>{
         added.push({name, avatar});
       }
       saveProfiles(p); lastAdded = added;
-      if(SHEET && added.length){ try{ await sheetCall({action:"add", students: added.map(x=>({slug: slugify(x.name), name: x.name, avatar: x.avatar}))}); sheetSync.list = null; }catch(err){ renderDashboard("Students added on this computer, but the class cloud could not be reached."); return; } }
+      if(SHEET && added.length){ try{ await sheetCall({action:"add", students: added.map(x=>({slug: slugify(x.name), name: x.name, avatar: x.avatar}))}); sheetSync.list = null; }catch(err){ renderDashboard("Students were added on this computer only. Class cloud problem: " + err.message); return; } }
       renderDashboard(`${added.length} student(s) added.${skipped.length ? ` Skipped (name already used): ${skipped.join(", ")}.` : ""}`);
       if(added.length){ sfx("right"); confetti(); }
       return;
